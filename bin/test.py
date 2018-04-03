@@ -86,7 +86,7 @@ def create_bucket(client, name, region):
 
 def empty_cfn_bucket(session, config, stack_id):
     """ Empty codepipeline bucket before fargate stack deletion as the bucket 
-        isnt empty so stack deletion fails.
+        isn't empty so stack deletion fails.
     """
     cfn_client =  session.client('cloudformation', region_name='us-east-1', config=config)
     cfn_stack = cfn_client.describe_stacks(StackName=stack_id)['Stacks'][0]

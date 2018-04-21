@@ -1,4 +1,4 @@
-""" Paravirtualization
+""" Get Bastion AMI for every region
 """
 
 import boto3, botocore, sys, os
@@ -14,7 +14,7 @@ def get_regions(client):
     return regions
 
 def bastion_ami(session, config, region):
-	final = []
+	bastion_ami = []
 	ami_filters= [
 	{'Name':'virtualization-type','Values':['hvm']},
 	{'Name':'hypervisor','Values':['xen']},
@@ -34,17 +34,15 @@ def bastion_ami(session, config, region):
 
 	ec2_client = session.client('ec2', region_name=region, config= config)
 	amis =  ec2_client.describe_images(ExecutableUsers=['all'], Owners=['amazon'], Filters = ami_filters)['Images']
-	print len(amis)
 
 	for ami in amis:
 		if 'elasticbeanstalk' not in ami['Name'] and 'ecs' not in ami['Name'] and 'amzn2' not in ami['Name']:
-			final.append(ami)
+			bastion_ami.append(ami)
 
-	print len(final)
  	sort_on = 'CreationDate'
-	decorated = [(dict_[sort_on], dict_) for dict_ in final]
-	decorated.sort(reverse=True)
-	result = [dict_ for (key, dict_) in decorated]
+	sort_list = [(dict_[sort_on], dict_) for dict_ in bastion_ami]
+	sort_list.sort(reverse=True)
+	result = [dict_ for (key, dict_) in sort_list]
 	print result[0]['ImageId']
 	print result[1]['ImageId']
 	print result[2]['ImageId']

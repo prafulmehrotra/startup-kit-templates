@@ -34,9 +34,10 @@ def bastion_ami(session, config, region):
 
 	ec2_client = session.client('ec2', region_name=region, config= config)
 	amis =  ec2_client.describe_images(ExecutableUsers=['all'], Owners=['amazon'], Filters = ami_filters)['Images']
+	exclude_names = [ 'elasticbeanstalk', 'ecs', 'amzn2', 'test' ]
 
 	for ami in amis:
-		if 'elasticbeanstalk' not in ami['Name'] and 'ecs' not in ami['Name'] and 'amzn2' not in ami['Name']:
+		if not any(exclude_name in ami['Name'] for exclude_name in exclude_names):
 			bastion_ami.append(ami)
 
  	sort_on = 'CreationDate'

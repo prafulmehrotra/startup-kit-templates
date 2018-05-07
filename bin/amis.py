@@ -40,18 +40,15 @@ def bastion_ami(session, config, region):
 		if not any(exclude_name in ami['Name'] for exclude_name in exclude_names):
 			bastion_ami.append(ami)
 
- 	sort_on = 'CreationDate'
-	sort_list = [(dict_[sort_on], dict_) for dict_ in bastion_ami]
+	sort_list = [(dict_['CreationDate'], dict_) for dict_ in bastion_ami]
 	sort_list.sort(reverse=True)
-	result = [dict_ for (key, dict_) in sort_list]
-	return result[0]['ImageId']
+	return sort_list[0][1]['ImageId']
 
 def main():
 
     config = Config(connect_timeout=60, read_timeout=60)
     session = boto3.Session(profile_name=None if len(sys.argv) < 2 else sys.argv[1])
     amis = {}
-    print 'Get AMI for every region'
     for region in get_regions(session.client('ec2', region_name= 'us-east-1', config= config)):
     	amis[region] = {"AMI": bastion_ami(session, config, region)}
 

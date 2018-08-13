@@ -2,6 +2,7 @@
 """
 
 import boto3, botocore, sys, os
+from ruamel.yaml import YAML
 from botocore.client import Config
 
 def get_regions(client):
@@ -49,10 +50,18 @@ def main():
     config = Config(connect_timeout=60, read_timeout=60)
     session = boto3.Session(profile_name=None if len(sys.argv) < 2 else sys.argv[1])
     amis = {}
+    f = open("ami.yaml","w")
     for region in get_regions(session.client('ec2', region_name= 'us-east-1', config= config)):
     	amis[region] = {"AMI": bastion_ami(session, config, region)}
 
-    print amis	
+    yaml=YAML()
+    yaml.default_flow_style = False
+
+    #Print AMI list, in yaml format, to terminal
+    print yaml.dump(amis, sys.stdout)
+
+    #Dump AMI list in yaml format to a file
+    print yaml.dump(amis, f)
     
 if __name__ == '__main__':
     main()

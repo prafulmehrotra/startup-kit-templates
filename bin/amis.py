@@ -58,10 +58,10 @@ def main():
     yaml.default_flow_style = False
 
     #Print AMI list, in yaml format, to terminal
-    print yaml.dump(amis, sys.stdout)
+    yaml.dump(amis, sys.stdout)
 
     #Dump AMI list in yaml format to a file
-    print yaml.dump(amis, f)
+    yaml.dump(amis, f)
     
 if __name__ == '__main__':
     main()
